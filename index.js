@@ -26,6 +26,7 @@ app.post("/autoAuth", UserController.autoAuth)
 import * as PostController from "./controllers/PostController.js"
 app.post("/addPost", PostController.addPost)
 app.post("/getPosts", PostController.getPosts)
+app.post("/getPost", PostController.getPost)
 // ? ROUTES
 
 // ! MULTER

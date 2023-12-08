@@ -10,7 +10,7 @@ export const loginGoogle = async (req, res) => {
     let user
 
     if (users.length === 0) { // no user => create
-        user = await create({ col: "user", req })
+        user = await create({ col: "user", createObj: req.body })
         const userId = user._id.toString()
         token = await signToken(userId)
     } else { // user exists

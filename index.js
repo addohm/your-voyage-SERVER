@@ -28,6 +28,10 @@ app.post("/addPost", PostController.addPost)
 app.post("/editPost", PostController.editPost)
 app.post("/getPosts", PostController.getPosts)
 app.post("/getPost", PostController.getPost)
+
+// ! applyForCoaching
+import * as ApplyController from "./controllers/ApplyController.js"
+app.post("/applyForCoaching", ApplyController.applyForCoaching)
 // ? ROUTES
 
 // ! MULTER

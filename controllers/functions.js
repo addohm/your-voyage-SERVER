@@ -6,6 +6,7 @@ const users = createModel("users")
 const tools = createModel("tools")
 const books = createModel("books")
 const news = createModel("news")
+const coaching = createModel("coaching")
 // ? models
 
 // ! CRUD

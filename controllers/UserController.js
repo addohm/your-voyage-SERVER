@@ -5,12 +5,12 @@ export const loginGoogle = async (req, res) => {
 
     const { email } = req.body
 
-    const users = await find({ col: "user", query: { email } })
+    const users = await find({ col: "users", query: { email } })
     let token
     let user
 
     if (users.length === 0) { // no user => create
-        user = await create({ col: "user", createObj: req.body })
+        user = await create({ col: "users", createObj: req.body })
         const userId = user._id.toString()
         token = await signToken(userId)
     } else { // user exists
@@ -28,7 +28,7 @@ export const autoAuth = async (req, res) => {
     const { token } = req.body
 
     const userId = await verifyToken(token)
-    let user = await find({ col: "user", query: { _id: userId } })
+    let user = await find({ col: "users", query: { _id: userId } })
     user = user[0]
 
     res.json({ ok: true, user })

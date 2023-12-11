@@ -1,7 +1,12 @@
-// * gray cause of eval
-import user from "../models/user.js"
-import tool from "../models/tool.js"
 import jwt from "jsonwebtoken"
+// ! models
+import createModel from "../models/createModel.js"
+// * gray cause of eval
+const users = createModel("users")
+const tools = createModel("tools")
+const books = createModel("books")
+const news = createModel("news")
+// ? models
 
 // ! CRUD
 // ! create

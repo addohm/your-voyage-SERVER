@@ -13,7 +13,7 @@ app.use(express.json()) // enables req.body
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, err => err ? console.log(err) : console.log(`SERVER OK, PORT: ${PORT}`))
-mongoose.connect(`mongodb+srv://enotowitch:qwerty123@cluster0.9tnodta.mongodb.net/yourVoyage?retryWrites=true&w=majority`)
+mongoose.connect(process.env.MONGO_URL)
     .then(console.log('DB OK')).catch(err => console.log('ERROR', err))
 
 // ! ROUTES

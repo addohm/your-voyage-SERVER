@@ -26,6 +26,7 @@ app.post("/autoAuth", UserController.autoAuth)
 import * as PostController from "./controllers/PostController.js"
 app.post("/addPost", PostController.addPost)
 app.post("/editPost", PostController.editPost)
+app.post("/deletePost", PostController.deletePost)
 app.post("/getPosts", PostController.getPosts)
 app.post("/getPost", PostController.getPost)
 
@@ -65,10 +66,10 @@ app.post("/" + uploadSiteContentPath, upload1.array("anyfile", 99), (req, res) =
 app.use("/" + uploadSiteContentPath, express.static(uploadSiteContentPath))
 
 // ! delete img
-app.post("/deleteImg", (req, res) => {
-    const { imgName } = req.body
-    if (existsSync(`${uploadSiteContentPath}/${imgName}`)) {
-        unlinkSync(`${uploadSiteContentPath}/${imgName}`)
+app.post("/deleteFile", (req, res) => {
+    const { name } = req.body
+    if (existsSync(`${uploadSiteContentPath}/${name}`)) {
+        unlinkSync(`${uploadSiteContentPath}/${name}`)
         res.json({ ok: true })
     } else {
         res.json({ ok: false })

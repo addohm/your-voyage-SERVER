@@ -1,4 +1,4 @@
-import { create, update, readAll, find } from "./functions.js"
+import { create, update, readAll, find, _delete } from "./functions.js"
 
 export const addPost = async (req, res) => {
     const created = await create({ createObj: req.body, col: req.body.type })
@@ -8,6 +8,11 @@ export const addPost = async (req, res) => {
 export const editPost = async (req, res) => {
     const updated = await update({ col: req.body.type, filter: { _id: req.body._id }, update: req.body })
     res.json(updated)
+}
+
+export const deletePost = async (req, res) => {
+    const deleted = await _delete({ col: req.body.type, query: { _id: req.body._id } })
+    res.json(deleted)
 }
 
 export const getPosts = async (req, res) => {

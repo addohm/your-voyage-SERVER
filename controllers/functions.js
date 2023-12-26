@@ -7,6 +7,8 @@ const tools = createModel("tools")
 const books = createModel("books")
 const news = createModel("news")
 const coaching = createModel("coaching")
+const terms = createModel("terms")
+const privacy = createModel("privacy")
 // ? models
 
 // ! CRUD

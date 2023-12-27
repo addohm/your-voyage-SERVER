@@ -21,6 +21,7 @@ mongoose.connect(process.env.MONGO_URL)
 import * as UserController from "./controllers/UserController.js"
 app.post("/loginGoogle", UserController.loginGoogle)
 app.post("/autoAuth", UserController.autoAuth)
+app.post("/loginSendEmail", UserController.loginSendEmail)
 
 // ! post
 import * as PostController from "./controllers/PostController.js"

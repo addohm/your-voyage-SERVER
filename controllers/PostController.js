@@ -6,12 +6,12 @@ export const addPost = async (req, res) => {
 }
 
 export const editPost = async (req, res) => {
-    const updated = await update({ col: req.body.type, filter: { _id: req.body._id }, update: req.body })
+    const updated = await update({ col: req.body.type, filter: { _id: req.body.id }, update: req.body })
     res.json(updated)
 }
 
 export const deletePost = async (req, res) => {
-    const deleted = await _delete({ col: req.body.type, query: { _id: req.body._id } })
+    const deleted = await _delete({ col: req.body.type, query: { _id: req.body.id } })
     res.json(deleted)
 }
 
@@ -21,6 +21,6 @@ export const getPosts = async (req, res) => {
 }
 
 export const getPost = async (req, res) => {
-    const post = await find({ col: req.body.type, query: { _id: req.body._id } })
+    const post = await find({ col: req.body.type, query: { _id: req.body.id } })
     res.json(post[0])
 }

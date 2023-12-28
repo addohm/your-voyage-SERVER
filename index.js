@@ -19,15 +19,16 @@ mongoose.connect(process.env.MONGO_URL)
 // ! ROUTES
 // ! auth
 import * as UserController from "./controllers/UserController.js"
+import { whoCanPass } from './middleware/whoCanPass.js'
+app.post("/autoAuth", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), UserController.autoAuth)
 app.post("/loginGoogle", UserController.loginGoogle)
-app.post("/autoAuth", UserController.autoAuth)
 app.post("/loginSendEmail", UserController.loginSendEmail)
 
 // ! post
 import * as PostController from "./controllers/PostController.js"
-app.post("/addPost", PostController.addPost)
-app.post("/editPost", PostController.editPost)
-app.post("/deletePost", PostController.deletePost)
+app.post("/addPost", (req, res, next) => whoCanPass({ req, res, next, role: "admin" }), PostController.addPost)
+app.post("/editPost", (req, res, next) => whoCanPass({ req, res, next, role: "admin" }), PostController.editPost)
+app.post("/deletePost", (req, res, next) => whoCanPass({ req, res, next, role: "admin" }), PostController.deletePost)
 app.post("/getPosts", PostController.getPosts)
 app.post("/getPost", PostController.getPost)
 

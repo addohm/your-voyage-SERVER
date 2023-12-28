@@ -35,6 +35,10 @@ app.post("/getPost", PostController.getPost)
 // ! applyForCoaching
 import * as ApplyController from "./controllers/ApplyController.js"
 app.post("/applyForCoaching", ApplyController.applyForCoaching)
+
+// ! stripe
+import * as StripeController from "./controllers/StripeController.js"
+app.post("/create-checkout-session", StripeController.stripe)
 // ? ROUTES
 
 // ! MULTER

@@ -62,7 +62,7 @@ export const loginSendEmail = async (req, res) => {
     <div style="width: fit-content;">
     	<h1 style="width: 100%">Please confirm your email</h1>
     	<img width="300px" src="cid:confirmEmail.png" />
-    	${mailerButton({ href: process.env.CLIENT_URL + "verifyLoginToken/" + token, text: "CONFIRM EMAIL" })}
+    	${mailerButton({ href: process.env.CLIENT_URL + "/verifyLoginToken/" + token, text: "CONFIRM EMAIL" })}
     </div>
     `)
 

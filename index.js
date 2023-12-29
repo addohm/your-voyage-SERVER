@@ -83,3 +83,36 @@ app.post("/deleteFile", (req, res) => {
     }
 })
 // ? MULTER
+
+// ! socket.io
+import http from "http";
+import { Server } from "socket.io";
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: process.env.CLIENT_URL,
+        methods: ["GET", "POST"],
+    },
+});
+
+io.on("connection", (socket) => {
+    console.log(`User Connected: ${socket.id}`);
+
+    // join room
+    socket.on("join_room", (data) => {
+        console.log("join_room", { data })
+        socket.join(data);
+    });
+
+    // messages to room
+    socket.on("send_message", (data) => {
+        console.log("send_message", { data })
+        socket.to(data.room).emit("receive_message", data);
+    });
+});
+
+server.listen(5001, () => {
+    console.log("SOCKET SERVER IS RUNNING");
+});

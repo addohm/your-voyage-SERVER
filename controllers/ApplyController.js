@@ -1,15 +1,16 @@
-import { create, find, verifyToken } from "./functions.js"
+import { create, find, signToken, verifyToken } from "./functions.js"
 
 // ! applyForCoaching
 export const applyForCoaching = async (req, res) => {
 
-    const { token } = req.body
+    const { token, email, coachEmail } = req.body
+    const roomToken = await signToken(email + coachEmail) // make roomToken for messages
 
     await verifyToken(token)
     const foundToken = await find({ col: "coaching", query: { token } })
     if (foundToken.length > 0) return // prevent writing order with same token
 
-    const created = await create({ createObj: req.body, col: req.body.type })
+    const created = await create({ createObj: { ...req.body, roomToken }, col: req.body.type })
     created && res.json({ msg: "Thank you for your Order!" })
 }
 
@@ -21,7 +22,7 @@ export const checkSubscriptionForCoaching = async (req, res) => {
     if (foundCoaching.length === 0) {
         return res.json({ ok: false, msg: "You don't have active subscription!" })
     }
-    
+
     if (foundCoaching.length > 0) {
         const lastSubscriptionStartDate = foundCoaching[foundCoaching.length - 1].createdAt
         const lastSubscriptionUnix = Date.parse(lastSubscriptionStartDate) / 1000;

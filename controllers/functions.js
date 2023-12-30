@@ -41,9 +41,9 @@ export const _delete = async ({ col, query }) => {
 }
 
 // ! find
-export const find = async ({ col, query, sort }) => {
-    // await find({ col: "todo", query: { when: "1/1/2000" }, sort: { position: 1 } })
-    const find = await eval(col).find({ ...query })?.sort({ ...sort })
+export const find = async ({ col, query, filter, sort }) => {
+    // await find({ col: "todo", query: { when: "1/1/2000" }, filter: { coach: 1 } <(leave only "coach" field)>, sort: { position: 1 } })
+    const find = await eval(col).find({ ...query }, { ...filter })?.sort({ ...sort })
     return find // [{},{}...]
 }
 // ? CRUD

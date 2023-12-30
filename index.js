@@ -37,6 +37,10 @@ import * as ApplyController from "./controllers/ApplyController.js"
 app.post("/applyForCoaching", ApplyController.applyForCoaching)
 app.post("/checkSubscriptionForCoaching", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), ApplyController.checkSubscriptionForCoaching)
 
+// ! messages
+import * as MessageController from "./controllers/MessageController.js"
+app.post("/getRooms", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getRooms)
+
 // ! stripe
 import * as StripeController from "./controllers/StripeController.js"
 app.post("/create-checkout-session", StripeController.stripe)

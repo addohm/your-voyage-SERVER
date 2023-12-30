@@ -9,6 +9,7 @@ const news = createModel("news")
 const coaching = createModel("coaching")
 const terms = createModel("terms")
 const privacy = createModel("privacy")
+const messages = createModel("messages")
 // ? models
 
 // ! CRUD

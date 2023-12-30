@@ -1,4 +1,4 @@
-import { find } from "./functions.js"
+import { find, update } from "./functions.js"
 
 // ! getRooms
 export const getRooms = async (req, res) => {
@@ -20,4 +20,21 @@ export const getRooms = async (req, res) => {
     })
 
     res.json(roomsInfo)
+}
+
+// ! getMessages
+export const getMessages = async (req, res) => {
+    const { token } = req.body
+    const foundMessages = await find({ col: "messages", query: { room: token } })
+    res.json(foundMessages)
+}
+
+// ! editMessage
+export const editMessage = async (req, res) => {
+
+    const { _id, email, type } = req.body
+    if (email !== req.user.email) return
+
+    const updated = await update({ col: type, filter: { _id }, update: req.body })
+    res.json(updated)
 }

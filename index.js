@@ -40,6 +40,8 @@ app.post("/checkSubscriptionForCoaching", (req, res, next) => whoCanPass({ req, 
 // ! messages
 import * as MessageController from "./controllers/MessageController.js"
 app.post("/getRooms", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getRooms)
+app.post("/getMessages", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getMessages)
+app.post("/editMessage", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.editMessage)
 
 // ! stripe
 import * as StripeController from "./controllers/StripeController.js"
@@ -91,6 +93,7 @@ app.post("/deleteFile", (req, res) => {
 // ! socket.io
 import http from "http";
 import { Server } from "socket.io";
+import { create } from './controllers/functions.js'
 
 const server = http.createServer(app);
 
@@ -101,19 +104,24 @@ const io = new Server(server, {
     },
 });
 
+const handleSendMessage = async (data) => {
+    // ! addMessage to db
+    const res = await create({ col: "messages", createObj: data });
+    io.to(data.room).emit("receive_message", { ...data, _id: res._id }); // add id to socket (temp) message: for editing and deleting 
+};
+
 io.on("connection", (socket) => {
-    console.log(`User Connected: ${socket.id}`);
+    // console.log(`User Connected: ${socket.id}`);
 
     // join room
     socket.on("join_room", (data) => {
-        console.log("join_room", { data })
+        // console.log("join_room", { data })
         socket.join(data);
     });
 
     // messages to room
     socket.on("send_message", (data) => {
-        console.log("send_message", { data })
-        socket.to(data.room).emit("receive_message", data);
+        handleSendMessage(data);
     });
 });
 

@@ -37,12 +37,6 @@ import * as ApplyController from "./controllers/ApplyController.js"
 app.post("/applyForCoaching", ApplyController.applyForCoaching)
 app.post("/checkSubscriptionForCoaching", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), ApplyController.checkSubscriptionForCoaching)
 
-// ! messages
-import * as MessageController from "./controllers/MessageController.js"
-app.post("/getRooms", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getRooms)
-app.post("/getMessages", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getMessages)
-app.post("/editMessage", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.editMessage)
-
 // ! stripe
 import * as StripeController from "./controllers/StripeController.js"
 app.post("/create-checkout-session", StripeController.stripe)
@@ -128,3 +122,9 @@ io.on("connection", (socket) => {
 server.listen(5001, () => {
     console.log("SOCKET SERVER IS RUNNING");
 });
+
+// ! messages
+import * as MessageController from "./controllers/MessageController.js"
+app.post("/getRooms", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getRooms)
+app.post("/getMessages", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getMessages)
+app.post("/editMessage", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.editMessage, (req, res, next) => io.to(req.room).emit('reload_room', { email: req.email, msg: req.msg, room: req.room, _id: req._id }))

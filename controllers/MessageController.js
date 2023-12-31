@@ -30,11 +30,18 @@ export const getMessages = async (req, res) => {
 }
 
 // ! editMessage
-export const editMessage = async (req, res) => {
+export const editMessage = async (req, res, next) => {
 
-    const { _id, email, type } = req.body
+    const { _id, email, type, room, msg } = req.body
     if (email !== req.user.email) return
 
     const updated = await update({ col: type, filter: { _id }, update: req.body })
     res.json(updated)
+
+    // for update message
+    req.email = email
+    req.msg = msg // updated message
+    req.room = room
+    req._id = _id
+    next()
 }

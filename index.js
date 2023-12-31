@@ -100,8 +100,8 @@ const io = new Server(server, {
 
 const handleSendMessage = async (data) => {
     // ! addMessage to db
-    const res = await create({ col: "messages", createObj: data });
-    io.to(data.room).emit("receive_message", { ...data, _id: res._id }); // add id to socket (temp) message: for editing and deleting 
+    const created = await create({ col: "messages", createObj: data });
+    io.to(data.room).emit("receive_message", { ...data, _id: created._id, createdAt: created.createdAt }); // add id to socket (temp) message: for editing and deleting 
 };
 
 io.on("connection", (socket) => {
@@ -127,4 +127,4 @@ server.listen(5001, () => {
 import * as MessageController from "./controllers/MessageController.js"
 app.post("/getRooms", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getRooms)
 app.post("/getMessages", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getMessages)
-app.post("/editMessage", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.editMessage, (req, res, next) => io.to(req.room).emit('reload_room', { email: req.email, msg: req.msg, room: req.room, _id: req._id }))
+app.post("/editMessage", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.editMessage, (req, res, next) => io.to(req.room).emit('edit_message', { email: req.email, msg: req.msg, room: req.room, _id: req._id, updatedAt: req.updatedAt }))

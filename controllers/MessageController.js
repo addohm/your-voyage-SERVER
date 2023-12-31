@@ -1,4 +1,4 @@
-import { find, update } from "./functions.js"
+import { _delete, find, update } from "./functions.js"
 
 // ! getRooms
 export const getRooms = async (req, res) => {
@@ -44,4 +44,10 @@ export const editMessage = async (req, res, next) => {
     req._id = _id
     req.updatedAt = updated?.updatedAt
     next()
+}
+
+// ! deleteMessage
+export const deleteMessage = async (req, res, next) => {
+    const deleted = await _delete({ col: req.body.type, query: { _id: req.body._id, email: req.user.email } })
+    res.json(deleted)
 }

@@ -50,4 +50,10 @@ export const editMessage = async (req, res, next) => {
 export const deleteMessage = async (req, res, next) => {
     const deleted = await _delete({ col: req.body.type, query: { _id: req.body._id, email: req.user.email } })
     res.json(deleted)
+
+    // for delete message
+    const { _id, room } = req.body
+    req._id = _id
+    req.room = room
+    next()
 }

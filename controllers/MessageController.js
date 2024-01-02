@@ -43,6 +43,8 @@ export const editMessage = async (req, res, next) => {
     req.room = room
     req._id = _id
     req.updatedAt = updated?.updatedAt
+    req.isUpdated = true
+    req.isRestored = false
     next()
 }
 

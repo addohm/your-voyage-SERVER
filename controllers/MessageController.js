@@ -5,14 +5,22 @@ export const getRooms = async (req, res) => {
 
     const { email } = req.user
 
-    let foundCoaches = await find({ col: "coaching", query: { email }, filter: { coachEmail: 1, room: 1, _id: 0 } }) // [{email, room},{...}...]
+    let query
+    if (req.user.role === "admin") {
+        query = {} // admin query all coaches
+    } else {
+        query = { email } // user query only his coaches
+    }
+
+    let foundCoaches = await find({ col: "coaching", query: { ...query }, filter: { coachEmail: 1, room: 1, _id: 0 } }) // [{email, room},{...}...]
     const foundCoachesEmails = foundCoaches.map(coach => coach.coachEmail) // [email,email,...]
     const foundCoachesRoomTokens = foundCoaches.map(coach => coach.room) // [token,token,...]
 
     const foundCoachesInfo = await find({ col: "users", query: { email: { $in: foundCoachesEmails } }, filter: { name: 1, img: 1, _id: 0 } }) // [{ name: 'google account coach name', img: 'https:// google account img' }, {...}]
-    let eachRoomLastMsg = await find({ col: "messages", query: { room: { $in: foundCoachesRoomTokens } }, filter: { msg: 1, _id: 0 } })
-    eachRoomLastMsg = eachRoomLastMsg[eachRoomLastMsg.length - 1]?.msg
-    const foundCoachesInfoWithRoomToken = foundCoachesInfo.map((coachInfo, ind) => ({ ...coachInfo, room: foundCoaches?.[ind].room, msg: eachRoomLastMsg }))
+    let allMessages = await find({ col: "messages", query: { room: { $in: foundCoachesRoomTokens } }, filter: { msg: 1, room: 1, _id: 0 } })
+    allMessages = allMessages.reverse()
+    const lastMsgsArr = foundCoachesRoomTokens.map(token => allMessages.find(message => token === message.room && message?.msg))
+    const foundCoachesInfoWithRoomToken = foundCoachesInfo.map((coachInfo, ind) => ({ ...coachInfo, room: foundCoaches?.[ind]?.room, msg: lastMsgsArr?.[ind]?.msg }))
 
     // clear mongo info
     const roomsInfo = foundCoachesInfoWithRoomToken.map(coach => {

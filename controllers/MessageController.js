@@ -6,10 +6,13 @@ export const getRooms = async (req, res) => {
     const { email } = req.user
 
     let foundCoaches = await find({ col: "coaching", query: { email }, filter: { coachEmail: 1, roomToken: 1, _id: 0 } }) // [{email, roomToken},{...}...]
-    const foundCoachesEmail = foundCoaches.map(coach => coach.coachEmail) // [email,email,...]
+    const foundCoachesEmails = foundCoaches.map(coach => coach.coachEmail) // [email,email,...]
+    const foundCoachesRoomTokens = foundCoaches.map(coach => coach.roomToken) // [token,token,...]
 
-    const foundCoachesInfo = await find({ col: "users", query: { email: { $in: foundCoachesEmail } }, filter: { name: 1, img: 1, _id: 0 } }) // [{ name: 'google account coach name', img: 'https:// google account img' }, {...}]
-    const foundCoachesInfoWithRoomToken = foundCoachesInfo.map((coachInfo, ind) => ({ ...coachInfo, roomToken: foundCoaches?.[ind].roomToken }))
+    const foundCoachesInfo = await find({ col: "users", query: { email: { $in: foundCoachesEmails } }, filter: { name: 1, img: 1, _id: 0 } }) // [{ name: 'google account coach name', img: 'https:// google account img' }, {...}]
+    let eachRoomLastMsg = await find({ col: "messages", query: { room: { $in: foundCoachesRoomTokens } }, filter: { msg: 1, _id: 0 } })
+    eachRoomLastMsg = eachRoomLastMsg[eachRoomLastMsg.length - 1]?.msg
+    const foundCoachesInfoWithRoomToken = foundCoachesInfo.map((coachInfo, ind) => ({ ...coachInfo, roomToken: foundCoaches?.[ind].roomToken, msg: eachRoomLastMsg }))
 
     // clear mongo info
     const roomsInfo = foundCoachesInfoWithRoomToken.map(coach => {
@@ -42,6 +45,7 @@ export const editMessage = async (req, res, next) => {
     req.msg = msg // updated message
     req.room = room
     req._id = _id
+    req.img = updated?.img
     req.updatedAt = updated?.updatedAt
     req.isUpdated = true
     req.isRestored = false

@@ -19,10 +19,10 @@ export const getRooms = async (req, res) => {
     const foundRoomTokens = found.map(found => found.room) // [token,token,...]
 
     const foundInfo = await find({ col: "users", query: { email: { $in: foundEmails } }, filter: { name: 1, img: 1, _id: 0 } }) // [{ name: 'google account found name', img: 'https:// google account img' }, {...}]
-    let allMessages = await find({ col: "messages", query: { room: { $in: foundRoomTokens } }, filter: { msg: 1, room: 1, _id: 0 } })
+    let allMessages = await find({ col: "messages", query: { room: { $in: foundRoomTokens } }, filter: { msg: 1, room: 1, createdAt: 1, _id: 0 } })
     allMessages = allMessages.reverse()
-    const lastMsgsArr = foundRoomTokens.map(token => allMessages.find(message => token === message.room && message?.msg))
-    const foundInfoWithRoomToken = foundInfo.map((foundInfo, ind) => ({ ...foundInfo, room: found?.[ind]?.room, msg: lastMsgsArr?.[ind]?.msg }))
+    const lastMsgsArr = foundRoomTokens.map(token => allMessages.find(message => token === message.room && { msg: message.msg, room: message.room, createdAt: message.createdAt }))
+    const foundInfoWithRoomToken = foundInfo.map((foundInfo, ind) => ({ ...foundInfo, room: found?.[ind]?.room, msg: lastMsgsArr?.[ind]?.msg, createdAt: lastMsgsArr?.[ind]?.createdAt }))
 
     // clear mongo info
     const roomsInfo = foundInfoWithRoomToken.map(found => {

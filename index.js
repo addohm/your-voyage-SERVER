@@ -5,7 +5,6 @@ import dotenv from 'dotenv'
 dotenv.config()
 import mongoose from 'mongoose'
 import cors from 'cors'
-process.env.NODE_ENV = 'production';
 
 const app = express()
 app.use(cors()) // enables api queries
@@ -119,7 +118,7 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(5001, () => {
+server.listen(443, () => { // https PORT
     console.log("SOCKET SERVER IS RUNNING");
 });
 

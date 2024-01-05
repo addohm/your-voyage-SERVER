@@ -123,6 +123,7 @@ const io = new Server(server, {
         origin: process.env.CLIENT_URL,
         methods: ["GET", "POST"],
     },
+    path: '/socket.io'
 });
 
 const handleSendMessage = async (data) => {

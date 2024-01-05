@@ -133,11 +133,11 @@ const handleSendMessage = async (data) => {
 };
 
 io.on("connection", (socket) => {
-    // console.log(`User Connected: ${socket.id}`);
+    console.log(`User Connected: ${socket.id}`);
 
     // join room
     socket.on("join_room", (data) => {
-        // console.log("join_room", { data })
+        console.log("join_room", { data })
         socket.join(data);
     });
 

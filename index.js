@@ -147,7 +147,7 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(PORT, () => { // https PORT
+server.listen(5001, () => { // https PORT
     console.log(`SOCKET SERVER IS RUNNING ON PORT: ${PORT}`);
 });
 

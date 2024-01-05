@@ -45,42 +45,70 @@ app.post("/create-checkout-session", StripeController.stripe)
 import multer from "multer"
 import fs, { existsSync, unlinkSync } from "fs"
 
-const uploadSiteContentPath = "upload/siteContent"
+// Reusable function to configure Multer instance for upload
+const configureMulter = (uploadPath) => {
+    return multer({
+        storage: multer.diskStorage({
+            destination: (req, file, cb) => {
+                const folderPath = uploadPath;
+                if (!existsSync(folderPath)) {
+                    fs.mkdirSync(folderPath, { recursive: true });
+                }
+                cb(null, folderPath);
+            },
+            filename: (req, file, cb) => {
+                cb(null, file.originalname);
+            },
+        }),
+    });
+};
 
-// Create storage configurations for the productImages folder
-const storage1 = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const folderPath = uploadSiteContentPath
-        if (!existsSync(folderPath)) {
-            fs.mkdirSync(folderPath, { recursive: true })
-        }
-        cb(null, folderPath)
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname)
-    }
-})
+// Reusable function for handling file uploads
+const handleFileUpload = (uploadPath) => (req, res) => {
+    const fileArr = req.files?.map(
+        (file) => `${process.env.SERVER_URL}/${uploadPath}/${file.filename}`
+    );
+    res.json({ fileArr });
+};
 
-// Create Multer instances with the respective storage configurations
-const upload1 = multer({ storage: storage1 })
+// ===
 
-app.post("/" + uploadSiteContentPath, upload1.array("anyfile", 99), (req, res) => {
-    const fileArr = req.files?.map((file) => `${process.env.SERVER_URL}/${uploadSiteContentPath}/${file.filename}`)
-    res.json({ fileArr })
-})
+// Upload for site content
+const uploadSiteContentPath = "upload/siteContent";
+const uploadSiteContent = configureMulter(uploadSiteContentPath);
 
-app.use("/" + uploadSiteContentPath, express.static(uploadSiteContentPath))
+app.post(
+    `/${uploadSiteContentPath}`,
+    uploadSiteContent.array("anyfile", 99),
+    handleFileUpload(uploadSiteContentPath)
+);
 
-// ! delete img
+app.use(`/${uploadSiteContentPath}`, express.static(uploadSiteContentPath));
+
+// Delete image
 app.post("/deleteFile", (req, res) => {
-    const { name } = req.body
-    if (existsSync(`${uploadSiteContentPath}/${name}`)) {
-        unlinkSync(`${uploadSiteContentPath}/${name}`)
-        res.json({ ok: true })
+    const { name } = req.body;
+    const deletePath = `${uploadSiteContentPath}/${name}`;
+
+    if (existsSync(deletePath)) {
+        unlinkSync(deletePath);
+        res.json({ ok: true });
     } else {
-        res.json({ ok: false })
+        res.json({ ok: false });
     }
-})
+});
+
+// ! messages images
+const uploadMsgContentPath = "upload/msgContent";
+const uploadMsgContent = configureMulter(uploadMsgContentPath);
+
+app.post(
+    `/${uploadMsgContentPath}`,
+    uploadMsgContent.array("anyfile", 99),
+    handleFileUpload(uploadMsgContentPath)
+);
+
+app.use(`/${uploadMsgContentPath}`, express.static(uploadMsgContentPath));
 // ? MULTER
 
 // ! socket.io

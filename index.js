@@ -147,8 +147,8 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(443, () => { // https PORT
-    console.log("SOCKET SERVER IS RUNNING");
+server.listen(PORT, () => { // https PORT
+    console.log(`SOCKET SERVER IS RUNNING ON PORT: ${PORT}`);
 });
 
 // ! messages

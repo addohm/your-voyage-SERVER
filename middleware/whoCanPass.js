@@ -9,7 +9,7 @@ export const whoCanPass = async ({ req, res, next, role }) => {
 
     // put user info in req
     const infoToStoreInReq = { id: userId, email: userEmail }
-    if (userEmail === process.env.ADMIN_EMAIL) {
+    if (userEmail === process.env.ADMIN_EMAIL || userEmail === process.env.ADMIN_EMAIL2) {
         req.user = {
             ...infoToStoreInReq,
             role: "admin"

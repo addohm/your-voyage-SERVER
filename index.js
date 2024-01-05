@@ -122,8 +122,7 @@ const io = new Server(server, {
     cors: {
         origin: process.env.CLIENT_URL,
         methods: ["GET", "POST"],
-    },
-    path: '/socket.io'
+    }
 });
 
 const handleSendMessage = async (data) => {
@@ -148,7 +147,7 @@ io.on("connection", (socket) => {
 });
 
 server.listen(5001, () => { // https PORT
-    console.log(`SOCKET SERVER IS RUNNING ON PORT: ${PORT}`);
+    console.log(`SOCKET SERVER IS RUNNING`);
 });
 
 // ! messages

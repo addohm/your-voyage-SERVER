@@ -11,7 +11,8 @@ app.use(cors()) // enables api queries
 app.use(express.json()) // enables req.body
 
 const PORT = process.env.PORT || 5000
-app.listen(PORT, err => err ? console.log(err) : console.log(`SERVER OK, PORT: ${PORT}`))
+// server.listen(PORT) is below
+// app.listen(PORT, err => err ? console.log(err) : console.log(`SERVER OK, PORT: ${PORT}`))
 mongoose.connect(process.env.MONGO_URL)
     .then(console.log('DB OK')).catch(err => console.log('ERROR', err))
 
@@ -146,8 +147,8 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(5001, () => { // https PORT
-    console.log(`SOCKET SERVER IS RUNNING`);
+server.listen(PORT, () => {
+    console.log(`APP & SOCKET SERVER IS RUNNING ON PORT: ${PORT}`);
 });
 
 // ! messages

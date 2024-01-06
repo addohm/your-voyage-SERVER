@@ -9,7 +9,7 @@ const news = createModel("news")
 const coaching = createModel("coaching")
 const terms = createModel("terms")
 const privacy = createModel("privacy")
-const messages = createModel("messages")
+const messages = createModel("messages", { isRead: { type: Boolean, default: false } })
 // ? models
 
 // ! CRUD
@@ -33,6 +33,12 @@ export const update = async ({ col, filter, update }) => {
     // await todo.findOneAndUpdate({_id}, {position})
     const updated = await eval(col).findOneAndUpdate({ ...filter }, { ...update })
     return updated // {}
+}
+
+// ! updateMany
+export const updateMany = async ({ col, filter, update }) => {
+    const updated = await eval(col).updateMany({ ...filter }, { ...update })
+    return updated // [{}, {}, ...]
 }
 
 // ! delete

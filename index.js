@@ -115,7 +115,7 @@ app.use(`/${uploadMsgContentPath}`, express.static(uploadMsgContentPath));
 // ! socket.io
 import http from "http";
 import { Server } from "socket.io";
-import { create } from './controllers/functions.js'
+import { create, updateMany } from './controllers/functions.js'
 
 const server = http.createServer(app);
 
@@ -132,13 +132,19 @@ const handleSendMessage = async (data) => {
     io.to(data.room).emit("receive_message", { ...data, _id: created._id, createdAt: created.createdAt }); // add id to socket (temp) message: for editing and deleting 
 };
 
+const handleMarkAllMessagesAsRead = async (userEmail) => {
+    // ! mark all messages as "isRead" for not this user (read all messages from another user, when entered the room)
+    await updateMany({ col: "messages", filter: { email: { $ne: userEmail } }, update: { isRead: true } })
+};
+
 io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
 
     // join room
     socket.on("join_room", (data) => {
-        console.log("join_room", { data })
-        socket.join(data);
+        // console.log("join_room", { data })
+        socket.join(data.room);
+        handleMarkAllMessagesAsRead(data.userEmail)
     });
 
     // messages to room

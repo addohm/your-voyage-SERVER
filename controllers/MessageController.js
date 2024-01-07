@@ -1,4 +1,4 @@
-import { _delete, find, update } from "./functions.js"
+import { _delete, find, update, updateMany } from "./functions.js"
 
 // ! getRooms
 export const getRooms = async (req, res) => {
@@ -79,4 +79,11 @@ export const deleteMessage = async (req, res, next) => {
     req.isDeleted = isDeleted
     req.isRestored = isRestored
     next()
+}
+
+export const markAllMessagesAsRead = async (req, res, next) => {
+    const { room, userEmail } = req.body
+    // TODO has DUP
+    // ! mark all messages as "isRead" for not this user (read all messages from another user, when entered the room)
+    await updateMany({ col: "messages", filter: { email: { $ne: userEmail }, room }, update: { isRead: true } })
 }

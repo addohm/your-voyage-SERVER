@@ -133,9 +133,10 @@ const handleSendMessage = async (data) => {
     io.to(data.room).emit("receive_message", { ...data, _id: created._id, createdAt: created.createdAt }); // add id to socket (temp) message: for editing and deleting 
 };
 
-const handleMarkAllMessagesAsRead = async (userEmail) => {
+const handleMarkAllMessagesAsRead = async (data) => {
+    const { room, userEmail } = data
     // ! mark all messages as "isRead" for not this user (read all messages from another user, when entered the room)
-    await updateMany({ col: "messages", filter: { email: { $ne: userEmail } }, update: { isRead: true } })
+    await updateMany({ col: "messages", filter: { email: { $ne: userEmail }, room }, update: { isRead: true } })
 };
 
 io.on("connection", (socket) => {
@@ -145,7 +146,7 @@ io.on("connection", (socket) => {
     socket.on("join_room", (data) => {
         // console.log("join_room", { data })
         socket.join(data.room);
-        handleMarkAllMessagesAsRead(data.userEmail)
+        handleMarkAllMessagesAsRead(data)
     });
 
     // messages to room

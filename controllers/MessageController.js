@@ -50,7 +50,7 @@ export const editMessage = async (req, res, next) => {
     const { _id, email, type, room, msg } = req.body
     if (email !== req.user.email) return
 
-    const updated = await update({ col: type, filter: { _id }, update: { ...req.body, isUpdated: true, isRestored: false } })
+    const updated = await update({ col: type, filter: { _id }, update: { ...req.body, isUpdated: true, isRestored: false, isRead: false } })
 
     // for update message
     req.email = email
@@ -64,13 +64,14 @@ export const editMessage = async (req, res, next) => {
     next()
 }
 
+// * both for deleteMessage and "restoreMessage"
 // ! deleteMessage
 export const deleteMessage = async (req, res, next) => {
     const { _id, room, type, isRestoring } = req.body
     // isDeleted is opposite of isRestoring: if not restoring isDeleted = true, if restoring, isDeleted = false
     const isDeleted = !isRestoring
     const isRestored = isRestoring
-    const deleted = await update({ col: type, filter: { _id }, update: { ...req.body, isDeleted, isRestored } })
+    const deleted = await update({ col: type, filter: { _id }, update: { ...req.body, isDeleted, isRestored, isRead: false } })
     res.json(deleted)
 
     // for delete/restore message

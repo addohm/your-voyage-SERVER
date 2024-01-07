@@ -14,6 +14,11 @@ export const whoCanPass = async ({ req, res, next, role }) => {
             ...infoToStoreInReq,
             role: "admin"
         }
+    } else if (userEmail === process.env.COACH_EMAIL || userEmail === process.env.COACH_EMAIL2) {
+        req.user = {
+            ...infoToStoreInReq,
+            role: "coach"
+        }
     } else {
         req.user = {
             ...infoToStoreInReq,

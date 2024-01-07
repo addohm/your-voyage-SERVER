@@ -37,3 +37,9 @@ export const checkSubscriptionForCoaching = async (req, res) => {
         }
     }
 }
+
+// ! getCoachList
+export const getCoachList = async (req, res) => {
+    const coachList = await find({ col: "users", query: { role: "coach" } })
+    res.json(coachList)
+}

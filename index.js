@@ -116,7 +116,8 @@ app.use(`/${uploadMsgContentPath}`, express.static(uploadMsgContentPath));
 // ! socket.io
 import http from "http";
 import { Server } from "socket.io";
-import { create, updateMany } from './controllers/functions.js'
+import { create } from './controllers/functions.js'
+import { markAllMsgsAsRead } from "./utils/markAllMsgsAsRead.js"
 
 const server = http.createServer(app);
 
@@ -134,10 +135,8 @@ const handleSendMessage = async (data) => {
 };
 
 const handleMarkAllMessagesAsRead = async (data) => {
-    const { room, userEmail } = data
-    // TODO has DUP
     // ! mark all messages as "isRead" for not this user (read all messages from another user, when entered the room)
-    await updateMany({ col: "messages", filter: { email: { $ne: userEmail }, room }, update: { isRead: true } })
+    markAllMsgsAsRead(data)
 };
 
 io.on("connection", (socket) => {

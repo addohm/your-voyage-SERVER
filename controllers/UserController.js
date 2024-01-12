@@ -31,8 +31,8 @@ export const autoAuth = async (req, res) => {
 
     const userId = await verifyToken(token)
     let user = await find({ col: "users", query: { _id: userId } })
-    user = user[0]
-    user.role = req.user.role // add user role (from whoCanPass middleware)
+    user = user?.[0]
+    user?.role = req?.user?.role // add user role (from whoCanPass middleware)
 
     res.json({ ok: true, user })
 }

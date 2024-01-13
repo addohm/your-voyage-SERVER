@@ -6,25 +6,10 @@ export const whoCanPass = async ({ req, res, next, role }) => {
     const userId = await verifyToken(token)
     const foundUser = await find({ col: "users", query: { _id: userId } })
     const userEmail = foundUser[0]?.email
+    const userRole = foundUser[0]?.role
 
     // put user info in req
-    const infoToStoreInReq = { id: userId, email: userEmail }
-    if (userEmail === process.env.ADMIN_EMAIL || userEmail === process.env.ADMIN_EMAIL2) {
-        req.user = {
-            ...infoToStoreInReq,
-            role: "admin"
-        }
-    } else if (userEmail === process.env.COACH_EMAIL || userEmail === process.env.COACH_EMAIL2) {
-        req.user = {
-            ...infoToStoreInReq,
-            role: "coach"
-        }
-    } else {
-        req.user = {
-            ...infoToStoreInReq,
-            role: "user"
-        }
-    }
+    req.user = { id: userId, email: userEmail, role: userRole }
 
     // prevent user from accessing admin routes
     if (role === "admin" && req.user.role !== "admin") {

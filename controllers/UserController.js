@@ -1,5 +1,6 @@
 import mailer from "../utils/mailer.js"
 import mailerButton from "../utils/mailerButton.js"
+import setUserRole from "../utils/setUserRole.js"
 import { create, find, signToken, verifyToken } from "./functions.js"
 
 // ! loginGoogle
@@ -12,7 +13,8 @@ export const loginGoogle = async (req, res) => {
     let user
 
     if (users.length === 0) { // no user => create
-        user = await create({ col: "users", createObj: req.body })
+        const role = setUserRole(email)
+        user = await create({ col: "users", createObj: { ...req.body, role } })
         const userId = user._id.toString()
         token = await signToken(userId)
     } else { // user exists
@@ -24,19 +26,6 @@ export const loginGoogle = async (req, res) => {
     res.json({ ok: true, token, user })
 }
 
-// ! autoAuth
-export const autoAuth = async (req, res) => {
-
-    const { token } = req.body
-
-    const userId = await verifyToken(token)
-    let user = await find({ col: "users", query: { _id: userId } })
-    user = user?.[0]
-    user.role = req?.user?.role // add user role (from whoCanPass middleware)
-
-    res.json({ ok: true, user })
-}
-
 // ! loginSendEmail
 export const loginSendEmail = async (req, res) => {
 
@@ -46,7 +35,8 @@ export const loginSendEmail = async (req, res) => {
     const foundUser = await find({ col: "users", query: { email } })
     let user
     if (foundUser.length === 0) {
-        user = await create({ col: "users", createObj: req.body })
+        const role = setUserRole(email)
+        user = await create({ col: "users", createObj: { ...req.body, role } })
     } else {
         user = foundUser[0]
     }
@@ -67,4 +57,17 @@ export const loginSendEmail = async (req, res) => {
     `)
 
     res.json({ ok: true })
+}
+
+// ! autoAuth
+export const autoAuth = async (req, res) => {
+
+    const { token } = req.body
+
+    const userId = await verifyToken(token)
+    let user = await find({ col: "users", query: { _id: userId } })
+    user = user?.[0]
+    user.role = req?.user?.role // add user role (from whoCanPass middleware)
+
+    res.json({ ok: true, user })
 }

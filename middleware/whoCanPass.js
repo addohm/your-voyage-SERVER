@@ -3,6 +3,8 @@ import { find, verifyToken } from "../controllers/functions.js"
 export const whoCanPass = async ({ req, res, next, role }) => {
 
     const token = req.headers.authorization
+    // if (!token) return ???
+
     const userId = await verifyToken(token)
     const foundUser = await find({ col: "users", query: { _id: userId } })
     const userEmail = foundUser[0]?.email

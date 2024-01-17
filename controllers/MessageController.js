@@ -40,7 +40,16 @@ export const getRooms = async (req, res) => {
 // ! getMessages
 export const getMessages = async (req, res) => {
     const { token } = req.body
-    const foundMessages = await find({ col: "messages", query: { room: token } })
+    const foundMessages = await find({ col: "messages", query: { room: token }, limit: 10, sort: { createdAt: -1 } })
+    foundMessages.reverse()
+    res.json(foundMessages)
+}
+
+// ! getOldMessages
+export const getOldMessages = async (req, res) => {
+    const { token, limit } = req.body
+    const foundMessages = await find({ col: "messages", query: { room: token }, limit, sort: { createdAt: -1 } })
+    foundMessages.reverse()
     res.json(foundMessages)
 }
 

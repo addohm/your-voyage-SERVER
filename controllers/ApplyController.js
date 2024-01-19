@@ -3,8 +3,8 @@ import { create, find, signToken, verifyToken } from "./functions.js"
 // ! applyForCoaching
 export const applyForCoaching = async (req, res) => {
 
-    const { token, email, coachEmail } = req.body
-    const room = await signToken(email + coachEmail) // make roomToken for messages
+    const { token, email, coachEmail, courseName } = req.body
+    const room = await signToken(email + coachEmail + courseName) // make roomToken for messages
 
     await verifyToken(token)
     const foundToken = await find({ col: "coaching", query: { token } })
@@ -37,10 +37,3 @@ export const checkSubscriptionForCoaching = async (req, res) => {
         }
     }
 }
-
-// ! getCoachList
-export const getCoachList = async (req, res) => {
-    const coachList = await find({ col: "users", query: { role: "coach" } })
-    res.json(coachList)
-}
-// test com 1

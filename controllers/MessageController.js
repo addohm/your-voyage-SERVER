@@ -15,16 +15,20 @@ export const getRooms = async (req, res) => {
         queryEmail = "coachEmail"
     }
 
-    let found = await find({ col: "coaching", query: { ...query }, filter: { [queryEmail]: 1, room: 1, _id: 0 } }) // [{email, room},{...}...]
+    let found = await find({ col: "coaching", query: { ...query }, filter: { [queryEmail]: 1, room: 1, courseName: 1, _id: 0 } }) // [{email, room},{...}...]
     const foundEmails = found.map(found => found?.[queryEmail]) // [email,email,...]
     const foundRoomTokens = found.map(found => found.room) // [token,token,...]
 
-    const foundInfo = await find({ col: "users", query: { email: { $in: foundEmails } }, filter: { name: 1, img: 1, _id: 0 } }) // [{ name: 'google account found name', img: 'https:// google account img' }, {...}]
+    // foundInfo must = foundEmails.length => allow 1 coach to have many courses
+    let foundInfo = []
+    for (let i = 0; i < foundEmails.length; i++) {
+        foundInfo.push(await find({ col: "users", query: { email: foundEmails[i] }, filter: { name: 1, img: 1, _id: 0 } }))
+    }
     let allMessages = await find({ col: "messages", query: { room: { $in: foundRoomTokens } }, filter: { msg: 1, room: 1, updatedAt: 1, email: 1, isRead: 1, img: 1, _id: 0 } })
     const allMessagesReversed = [...allMessages].reverse()
     const lastMsgsArr = foundRoomTokens.map(token => allMessagesReversed.find(message => token === message.room && { msg: message.msg, room: message.room, createdAt: message.updatedAt, img: message.img }))
     const notReadMsgsArr = foundRoomTokens.map(token => allMessages.map(message => email !== message.email && message.isRead === false && token === message.room).filter(leaveOnlyTrue => leaveOnlyTrue))
-    const foundInfoWithRoomToken = foundInfo.map((foundInfo, ind) => ({ ...foundInfo, room: found?.[ind]?.room, msg: lastMsgsArr?.[ind]?.msg, msgImg: lastMsgsArr?.[ind]?.img, createdAt: lastMsgsArr?.[ind]?.updatedAt, notReadNum: notReadMsgsArr?.[ind]?.length }))
+    const foundInfoWithRoomToken = foundInfo.map((foundInfo, ind) => ({ ...foundInfo, room: found?.[ind]?.room, msg: lastMsgsArr?.[ind]?.msg, msgImg: lastMsgsArr?.[ind]?.img, createdAt: lastMsgsArr?.[ind]?.updatedAt, notReadNum: notReadMsgsArr?.[ind]?.length, courseName: found?.[ind]?.courseName }))
 
     // clear mongo info
     const roomsInfo = foundInfoWithRoomToken.map(found => {

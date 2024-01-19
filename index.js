@@ -36,7 +36,6 @@ app.post("/getPost", PostController.getPost)
 import * as ApplyController from "./controllers/ApplyController.js"
 app.post("/applyForCoaching", ApplyController.applyForCoaching)
 app.post("/checkSubscriptionForCoaching", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), ApplyController.checkSubscriptionForCoaching)
-app.post("/getCoachList", ApplyController.getCoachList)
 
 // ! stripe
 import * as StripeController from "./controllers/StripeController.js"

@@ -10,6 +10,7 @@ const coaching = createModel("coaching")
 const terms = createModel("terms")
 const privacy = createModel("privacy")
 const messages = createModel("messages", { isRead: { type: Boolean, default: false } })
+const courses = createModel("courses")
 // ? models
 
 // ! CRUD

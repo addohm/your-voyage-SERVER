@@ -8,7 +8,9 @@ export const stripe = async (req, res) => {
 
     const { courseName } = req.body
     const foundCourse = await find({ col: "courses", query: { courseName } })
-    const storeItems = [{ name: courseName, priceInCents: foundCourse[0].price * 100 }]
+    const { discountPrice, price } = foundCourse[0]
+    const priceInCents = discountPrice ? discountPrice * 100 : price * 100
+    const storeItems = [{ name: courseName, priceInCents }]
 
     // if user is redirected to "/verifyOrderToken" page, he gets orderToken, 
     // then client makes app.post("/applyForCoaching") from "/verifyOrderToken" page

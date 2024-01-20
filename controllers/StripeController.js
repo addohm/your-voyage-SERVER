@@ -1,14 +1,14 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import { signToken } from "./functions.js";
+import { find, signToken } from "./functions.js";
 import _stripe from "stripe"
 const __stripe = _stripe(process.env.STRIPE_PRIVATE_KEY)
 
 export const stripe = async (req, res) => {
 
-    const storeItems = [
-        { priceInCents: 10000, name: "Coaching" },
-    ]
+    const { courseName } = req.body
+    const foundCourse = await find({ col: "courses", query: { courseName } })
+    const storeItems = [{ name: courseName, priceInCents: foundCourse[0].price * 100 }]
 
     // if user is redirected to "/verifyOrderToken" page, he gets orderToken, 
     // then client makes app.post("/applyForCoaching") from "/verifyOrderToken" page

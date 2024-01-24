@@ -23,9 +23,9 @@ export const create = async ({ createObj, col }) => {
 }
 
 // ! readAll
-export const readAll = async ({ col }) => {
+export const readAll = async ({ col, sort }) => {
     // await todo.find()
-    const all = await eval(col).find()
+    const all = await eval(col).find().sort({ ...sort })
     return all // [{},{}...]
 }
 

@@ -11,7 +11,7 @@ export const applyForCoaching = async (req, res) => {
     if (foundToken.length > 0) return // prevent writing order with same token
 
     const created = await create({ createObj: { ...req.body, room }, col: req.body.type })
-    created && res.json({ msg: "Thank you for your Order!" })
+    created && res.json({ msg: "You have 30 days left. Thank you!" })
 }
 
 // ! checkSubscriptionForCoaching

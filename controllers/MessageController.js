@@ -2,21 +2,25 @@ import { markAllMsgsAsRead } from "../utils/markAllMsgsAsRead.js"
 import { _delete, find, update } from "./functions.js"
 
 // ! getRooms
-export const getRooms = async (req, res) => {
+export const getRooms = async (req, res) => { // room = coaching (DB model)
 
     const { email } = req.user // email = userEmail
 
-    let query, queryEmail
+    let found
     if (req.user.role === "admin" || req.user.role === "coach") {
-        query = { coachEmail: email } // coach: query all coach's subscribers
-        queryEmail = "email"
+        // admin or coach
+        const foundCourseIdsForThisCoach = await find({ col: "courses", query: { coachEmail: email }, filter: { courseId: 1 } })
+        const foundCourseIds = foundCourseIdsForThisCoach?.map(course => String(course._id))
+        const roomsForThisCoach = []
+        for (let i = 0; i < foundCourseIds.length; i++) {
+            roomsForThisCoach.push(await find({ col: "coaching", query: { courseId: foundCourseIds[i] }, filter: { email: 1, room: 1, courseName: 1, _id: 0 } }))
+        }
+        found = roomsForThisCoach.flat()
     } else {
-        query = { email } // user query only his coaches
-        queryEmail = "coachEmail"
+        // user
+        found = await find({ col: "coaching", query: { email }, filter: { email: 1, room: 1, courseName: 1, _id: 0 } }) // [{email, room},{...}...]
     }
-
-    let found = await find({ col: "coaching", query: { ...query }, filter: { [queryEmail]: 1, room: 1, courseName: 1, _id: 0 } }) // [{email, room},{...}...]
-    const foundEmails = found.map(found => found?.[queryEmail]) // [email,email,...]
+    const foundEmails = found.map(found => found?.email) // [email,email,...]
     const foundRoomTokens = found.map(found => found.room) // [token,token,...]
 
     // foundInfo must = foundEmails.length => allow 1 coach to have many courses

@@ -6,9 +6,9 @@ const __stripe = _stripe(process.env.STRIPE_PRIVATE_KEY)
 
 export const stripe = async (req, res) => {
 
-    const { courseName } = req.body
-    const foundCourse = await find({ col: "courses", query: { courseName } })
-    const { discountPrice, price } = foundCourse[0]
+    const { courseId } = req.body
+    const foundCourse = await find({ col: "courses", query: { _id: courseId } })
+    const { discountPrice, price, courseName } = foundCourse?.[0]
     const priceInCents = discountPrice ? discountPrice * 100 : price * 100
     const storeItems = [{ name: courseName, priceInCents }]
 

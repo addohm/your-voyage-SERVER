@@ -1,15 +1,16 @@
-import { create, find, signToken, verifyToken } from "./functions.js"
+import { _delete, create, find, signToken, verifyToken } from "./functions.js"
 
 // ! applyForCoaching
 export const applyForCoaching = async (req, res) => {
 
-    const { token, email, coachEmail, courseName } = req.body
-    const room = await signToken(email + coachEmail + courseName) // make roomToken for messages
+    const { token, email, courseId } = req.body
+    await verifyToken(token) // if fails return
 
-    await verifyToken(token)
     const foundToken = await find({ col: "coaching", query: { token } })
     if (foundToken.length > 0) return // prevent writing order with same token
 
+    const room = await signToken(email + courseId) // make roomToken for messages
+    await _delete({ query: { email, courseId }, col: req.body.type }) // if user renews subscription => delete old subscription
     const created = await create({ createObj: { ...req.body, room }, col: req.body.type })
     created && res.json({ msg: "You have 30 days left. Thank you!" })
 }
@@ -17,23 +18,36 @@ export const applyForCoaching = async (req, res) => {
 // ! checkSubscriptionForCoaching
 export const checkSubscriptionForCoaching = async (req, res) => {
 
-    const foundCoaching = await find({ col: "coaching", query: { email: req.user.email } })
+    const { type, room } = req.body
 
-    if (foundCoaching.length === 0) {
-        return res.json({ ok: false, msg: "You don't have active subscription!" })
+    if (type === "all") {
+        // all checks if user has active subscription at all for at least one coaching
+        const foundCoaching = await find({ col: "coaching", query: { email: req.user.email } })
+
+        if (foundCoaching.length === 0) {
+            return res.json({ ok: false, msg: "You don't have active subscriptions!" })
+        }
     }
 
-    if (foundCoaching.length > 0) {
-        const lastSubscriptionStartDate = foundCoaching[foundCoaching.length - 1].createdAt
-        const lastSubscriptionUnix = Date.parse(lastSubscriptionStartDate) / 1000;
+    if (type === "one") {
+        // one checks if user has active subscription for one EXACT coaching (using room prop)
+        const foundCoaching = await find({ col: "coaching", query: { room, email: req.user.email } })
+
+        const coaching = foundCoaching?.[0]
+        if (!coaching) return
+        const { courseId, courseName } = coaching
+
+        const subscriptionStartDate = coaching.updatedAt
+        const subscriptionUnix = Date.parse(subscriptionStartDate) / 1000;
         const nowUnix = Math.floor(Date.now() / 1000)
-        const is30daysPassed = nowUnix - lastSubscriptionUnix > 2592000
-        const howManyDaysLeft = Math.ceil((2592000 - (nowUnix - lastSubscriptionUnix)) / 86400)
-        const nextDateToContinueSubscription = new Date(Date.parse(lastSubscriptionStartDate) + 2592000000).toLocaleDateString()
+        const is30daysPassed = nowUnix - subscriptionUnix > 2592000
+        const howManyDaysLeft = Math.ceil((2592000 - (nowUnix - subscriptionUnix)) / 86400)
+        const nextDateToContinueSubscription = new Date(Date.parse(subscriptionStartDate) + 2592000000).toLocaleDateString()
+
         if (!is30daysPassed) {
-            return res.json({ ok: true, msg: `Thank you for subscription! You have ${howManyDaysLeft} days left. Next subscription date: ${nextDateToContinueSubscription}` })
+            return res.json({ ok: true, msg: `You have ${howManyDaysLeft} days left. Next subscription date: ${nextDateToContinueSubscription}` })
         } else {
-            return res.json({ ok: false, msg: "Your subscription has expired" })
+            return res.json({ ok: false, msg: "Your subscription has expired, renew it to continue", courseId, courseName })
         }
     }
 }

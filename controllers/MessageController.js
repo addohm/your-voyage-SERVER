@@ -13,25 +13,25 @@ export const getRooms = async (req, res) => { // room = coaching (DB model)
         const foundCourseIds = foundCourseIdsForThisCoach?.map(course => String(course._id))
         const roomsForThisCoach = []
         for (let i = 0; i < foundCourseIds.length; i++) {
-            roomsForThisCoach.push(await find({ col: "coaching", query: { courseId: foundCourseIds[i] }, filter: { email: 1, room: 1, courseName: 1, _id: 0 } }))
+            roomsForThisCoach.push(await find({ col: "coaching", query: { courseId: foundCourseIds[i] }, filter: { userId: 1, room: 1, courseName: 1, _id: 0 } }))
         }
         found = roomsForThisCoach.flat()
     } else {
         // user
-        found = await find({ col: "coaching", query: { email }, filter: { email: 1, room: 1, courseName: 1, _id: 0 } }) // [{email, room},{...}...]
+        found = await find({ col: "coaching", query: { userId: req.user.id }, filter: { userId: 1, room: 1, courseName: 1, _id: 0 } }) // [{userId, room},{...}...]
     }
-    const foundEmails = found.map(found => found?.email) // [email,email,...]
+    const foundEmails = found.map(found => found?.userId) // [userId,userId,...]
     const foundRoomTokens = found.map(found => found.room) // [token,token,...]
 
     // foundInfo must = foundEmails.length => allow 1 coach to have many courses
     let foundInfo = []
     for (let i = 0; i < foundEmails.length; i++) {
-        foundInfo.push(await find({ col: "users", query: { email: foundEmails[i] }, filter: { name: 1, img: 1, _id: 1 } }))
+        foundInfo.push(await find({ col: "users", query: { _id: foundEmails[i] }, filter: { name: 1, img: 1, _id: 1 } }))
     }
-    let allMessages = await find({ col: "messages", query: { room: { $in: foundRoomTokens } }, filter: { msg: 1, room: 1, updatedAt: 1, email: 1, isRead: 1, img: 1, _id: 0 } })
+    let allMessages = await find({ col: "messages", query: { room: { $in: foundRoomTokens } }, filter: { msg: 1, room: 1, updatedAt: 1, userId: 1, isRead: 1, img: 1, _id: 0 } })
     const allMessagesReversed = [...allMessages].reverse()
     const lastMsgsArr = foundRoomTokens.map(token => allMessagesReversed.find(message => token === message.room && { msg: message.msg, room: message.room, createdAt: message.updatedAt, img: message.img }))
-    const notReadMsgsArr = foundRoomTokens.map(token => allMessages.map(message => email !== message.email && message.isRead === false && token === message.room).filter(leaveOnlyTrue => leaveOnlyTrue))
+    const notReadMsgsArr = foundRoomTokens.map(token => allMessages.map(message => req.user.id !== message.userId && message.isRead === false && token === message.room).filter(leaveOnlyTrue => leaveOnlyTrue))
 
     const foundInfoWithRoomToken = foundInfo.map((info, infoInd) => ({
         name: info?.[0]?.name,
@@ -83,13 +83,13 @@ export const getMessages = async (req, res) => {
 // ! editMessage
 export const editMessage = async (req, res, next) => {
 
-    const { _id, email, type, room, msg } = req.body
-    if (email !== req.user.email) return
+    const { _id, userId, type, room, msg } = req.body
+    if (userId !== req.user.id) return
 
     const updated = await update({ col: type, filter: { _id }, update: { ...req.body, isUpdated: true, isRestored: false, isRead: false } })
 
     // for update message
-    req.email = email
+    req.userId = req.user.id
     req.msg = msg // updated message
     req.room = room
     req._id = _id

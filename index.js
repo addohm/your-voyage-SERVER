@@ -160,6 +160,6 @@ server.listen(PORT, () => {
 import * as MessageController from "./controllers/MessageController.js"
 app.post("/getRooms", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getRooms)
 app.post("/getMessages", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.getMessages)
-app.post("/editMessage", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.editMessage, (req, res, next) => io.to(req.room).emit('edit_message', { email: req.email, msg: req.msg, room: req.room, _id: req._id, img: req.img, updatedAt: req.updatedAt, isUpdated: req.isUpdated, isRestored: req.isRestored }))
+app.post("/editMessage", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.editMessage, (req, res, next) => io.to(req.room).emit('edit_message', { userId: req.user.id, msg: req.msg, room: req.room, _id: req._id, img: req.img, updatedAt: req.updatedAt, isUpdated: req.isUpdated, isRestored: req.isRestored }))
 app.post("/deleteMessage", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.deleteMessage, (req, res, next) => io.to(req.room).emit('delete_message', { _id: req._id, updatedAt: req.updatedAt, isDeleted: req.isDeleted, isRestored: req.isRestored }))
 app.post("/markAllMessagesAsRead", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), MessageController.markAllMessagesAsRead)

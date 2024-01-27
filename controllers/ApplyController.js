@@ -3,14 +3,14 @@ import { _delete, create, find, signToken, verifyToken } from "./functions.js"
 // ! applyForCoaching
 export const applyForCoaching = async (req, res) => {
 
-    const { token, email, courseId } = req.body
+    const { token, userId, courseId } = req.body
     await verifyToken(token) // if fails return
 
     const foundToken = await find({ col: "coaching", query: { token } })
     if (foundToken.length > 0) return // prevent writing order with same token
 
-    const room = await signToken(email + courseId) // make roomToken for messages
-    await _delete({ query: { email, courseId }, col: req.body.type }) // if user renews subscription => delete old subscription
+    const room = await signToken(userId + courseId) // make roomToken for messages
+    await _delete({ query: { userId, courseId }, col: req.body.type }) // if user renews subscription => delete old subscription
     const created = await create({ createObj: { ...req.body, room }, col: req.body.type })
     created && res.json({ msg: "You have 30 days left. Thank you!" })
 }
@@ -22,7 +22,7 @@ export const checkSubscriptionForCoaching = async (req, res) => {
 
     if (type === "all") {
         // all checks if user has active subscription at all for at least one coaching
-        const foundCoaching = await find({ col: "coaching", query: { email: req.user.email } })
+        const foundCoaching = await find({ col: "coaching", query: { userId: req.user.id } })
 
         if (foundCoaching.length === 0) {
             return res.json({ ok: false, msg: "You don't have active subscriptions!" })
@@ -31,7 +31,7 @@ export const checkSubscriptionForCoaching = async (req, res) => {
 
     if (type === "one") {
         // one checks if user has active subscription for one EXACT coaching (using room prop)
-        const foundCoaching = await find({ col: "coaching", query: { room, email: req.user.email } })
+        const foundCoaching = await find({ col: "coaching", query: { room, userId: req.user.id } })
 
         const coaching = foundCoaching?.[0]
         if (!coaching) return

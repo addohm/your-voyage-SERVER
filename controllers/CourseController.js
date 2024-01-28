@@ -2,7 +2,7 @@ import { create, find, update } from "./functions.js"
 
 export const addCourse = async (req, res) => {
 
-    const { coachEmail, _id } = req.body
+    let { coachEmail, _id, discountPrice } = req.body
     const foundCourse = await find({ col: "courses", query: { _id } })
     const foundUser = await find({ col: "users", query: { email: coachEmail } })
     const img = foundUser?.[0]?.img
@@ -10,6 +10,7 @@ export const addCourse = async (req, res) => {
     if (!foundCourse?.[0]) { // no course found => create course
         await create({ createObj: { ...req.body, img }, col: req.body.type })
     } else { // has course => update
-        await update({ update: { ...req.body, img }, col: req.body.type, filter: { _id } })
+        discountPrice = discountPrice === undefined ? "" : discountPrice // ability to delete discount
+        await update({ update: { ...req.body, img, discountPrice }, col: req.body.type, filter: { _id } })
     }
 }

@@ -11,6 +11,7 @@ const terms = createModel("terms")
 const privacy = createModel("privacy")
 const messages = createModel("messages", { isRead: { type: Boolean, default: false } })
 const courses = createModel("courses")
+const faq = createModel("faq")
 // ? models
 
 // ! CRUD
@@ -53,6 +54,15 @@ export const find = async ({ col, query, filter, sort, limit, skip }) => {
     // await find({ col: "todo", query: { when: "1/1/2000" }, filter: { coach: 1 } <(leave only "coach" field)>, sort: { position: 1 } })
     const find = await eval(col).find({ ...query }, { ...filter })?.sort({ ...sort })?.limit(limit)?.skip(skip)
     return find // [{},{}...]
+}
+
+export const createMany = async ({ reqBody }) => {
+    const foundPosts = await find({ col: reqBody.type, query: { _id: reqBody._id } })
+    if (!foundPosts?.[0]) { // no post found => CREATE POST
+        await create({ createObj: { ...reqBody }, col: reqBody.type })
+    } else { // has post => UPDATE POST
+        await update({ update: { ...reqBody }, col: reqBody.type, filter: { _id: reqBody._id } })
+    }
 }
 // ? CRUD
 

@@ -31,6 +31,7 @@ app.post("/editPost", (req, res, next) => whoCanPass({ req, res, next, role: "ad
 app.post("/deletePost", (req, res, next) => whoCanPass({ req, res, next, role: "admin" }), PostController.deletePost)
 app.post("/getPosts", PostController.getPosts)
 app.post("/getPost", PostController.getPost)
+app.post("/addPosts", (req, res, next) => whoCanPass({ req, res, next, role: "admin" }), PostController.addPosts)
 
 // ! applyForCoaching
 import * as ApplyController from "./controllers/ApplyController.js"

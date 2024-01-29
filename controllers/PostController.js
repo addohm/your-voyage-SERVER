@@ -1,4 +1,4 @@
-import { create, update, readAll, find, _delete } from "./functions.js"
+import { create, update, readAll, find, _delete, createMany } from "./functions.js"
 
 export const addPost = async (req, res) => {
     const created = await create({ createObj: req.body, col: req.body.type })
@@ -23,4 +23,9 @@ export const getPosts = async (req, res) => {
 export const getPost = async (req, res) => {
     const post = await find({ col: req.body.type, query: { _id: req.body.id } })
     res.json(post[0])
+}
+
+export const addPosts = async (req, res) => {
+    const posts = await createMany({ reqBody: req.body })
+    res.json(posts)
 }

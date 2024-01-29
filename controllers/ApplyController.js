@@ -25,7 +25,9 @@ export const checkSubscriptionForCoaching = async (req, res) => {
         const foundCoaching = await find({ col: "coaching", query: { userId: req.user.id } })
 
         if (foundCoaching.length === 0) {
-            return res.json({ ok: false, msg: "You don't have active subscriptions!" })
+            return res.json({ ok: false, msg: "No active subscriptions" })
+        } else {
+            return res.json({ ok: true, msg: "" })
         }
     }
 
@@ -41,11 +43,11 @@ export const checkSubscriptionForCoaching = async (req, res) => {
         const subscriptionUnix = Date.parse(subscriptionStartDate) / 1000;
         const nowUnix = Math.floor(Date.now() / 1000)
         const is30daysPassed = nowUnix - subscriptionUnix > 2592000
-        const howManyDaysLeft = Math.ceil((2592000 - (nowUnix - subscriptionUnix)) / 86400)
-        const nextDateToContinueSubscription = new Date(Date.parse(subscriptionStartDate) + 2592000000).toLocaleDateString()
+        const daysLeft = Math.ceil((2592000 - (nowUnix - subscriptionUnix)) / 86400)
+        const nextSubscriptionDate = new Date(Date.parse(subscriptionStartDate) + 2592000000).toLocaleDateString()
 
         if (!is30daysPassed) {
-            return res.json({ ok: true, msg: `You have ${howManyDaysLeft} days left. Next subscription date: ${nextDateToContinueSubscription}` })
+            return res.json({ ok: true, msg: "", daysLeft, nextSubscriptionDate })
         } else {
             return res.json({ ok: false, msg: "Your subscription has expired, renew it to continue", courseId, courseName })
         }

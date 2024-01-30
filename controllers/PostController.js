@@ -16,7 +16,8 @@ export const deletePost = async (req, res) => {
 }
 
 export const getPosts = async (req, res) => {
-    const posts = await readAll({ col: req.body.type, sort: req.body.sort })
+    const { type, lang, sort } = req.body
+    const posts = await find({ col: type, query: { lang }, sort })
     res.json(posts)
 }
 

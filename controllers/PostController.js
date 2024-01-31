@@ -22,8 +22,9 @@ export const getPosts = async (req, res) => {
 }
 
 export const getPost = async (req, res) => {
-    const post = await find({ col: req.body.type, query: { _id: req.body.id } })
-    res.json(post[0])
+    const { type, ...reqBodyWithoutType } = req.body
+    const post = await find({ col: req.body.type, query: { ...reqBodyWithoutType } })
+    res.json(post[0]) // {}
 }
 
 export const addPosts = async (req, res) => {

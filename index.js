@@ -45,6 +45,11 @@ app.post("/addCourse", (req, res, next) => whoCanPass({ req, res, next, role: "a
 // ! stripe
 import * as StripeController from "./controllers/StripeController.js"
 app.post("/create-checkout-session", StripeController.stripe)
+
+// ! newsletter
+import * as NewsletterController from "./controllers/NewsletterController.js"
+app.post("/subUnSubNewsletter", (req, res, next) => whoCanPass({ req, res, next, role: "user" }), NewsletterController.subUnSubNewsletter)
+
 // ? ROUTES
 
 // ! MULTER

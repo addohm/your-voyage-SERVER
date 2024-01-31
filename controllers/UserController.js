@@ -17,7 +17,9 @@ export const loginGoogle = async (req, res) => {
         user = await create({ col: "users", createObj: { ...req.body, role } })
         const userId = user._id.toString()
         // add support room on user creation
-        await create({ col: "support", createObj: { room: userId, userId, type: "support" } }) // create support room for new user 
+        await create({ col: "support", createObj: { room: userId, userId, type: "support" } })
+        // subscribe user to newsletter on user creation
+        await create({ col: "newsletter", createObj: { userId, email, type: "newsletter" } })
         token = await signToken(userId)
     } else { // user exists
         user = users[0]
@@ -41,7 +43,9 @@ export const loginSendEmail = async (req, res) => {
         user = await create({ col: "users", createObj: { ...req.body, role } })
         const userId = user._id.toString()
         // add support room on user creation
-        await create({ col: "support", createObj: { room: userId, userId, type: "support" } }) // create support room for new user
+        await create({ col: "support", createObj: { room: userId, userId, type: "support" } })
+        // subscribe user to newsletter on user creation
+        await create({ col: "newsletter", createObj: { userId, email, type: "newsletter" } })
     } else { // user exists
         user = foundUser[0]
     }

@@ -13,6 +13,7 @@ const messages = createModel("messages", { isRead: { type: Boolean, default: fal
 const courses = createModel("courses")
 const faq = createModel("faq")
 const support = createModel("support")
+const newsletter = createModel("newsletter")
 // ? models
 
 // ! CRUD

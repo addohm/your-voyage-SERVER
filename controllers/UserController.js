@@ -16,6 +16,8 @@ export const loginGoogle = async (req, res) => {
         const role = setUserRole(email)
         user = await create({ col: "users", createObj: { ...req.body, role } })
         const userId = user._id.toString()
+        // add support room on user creation
+        await create({ col: "support", createObj: { room: userId, userId, type: "support" } }) // create support room for new user 
         token = await signToken(userId)
     } else { // user exists
         user = users[0]
@@ -34,10 +36,13 @@ export const loginSendEmail = async (req, res) => {
     // register user, BUT DON'T SEND userInfo to client, as user have to click "verify" in email
     const foundUser = await find({ col: "users", query: { email } })
     let user
-    if (foundUser.length === 0) {
+    if (foundUser.length === 0) { // no user => create
         const role = setUserRole(email)
         user = await create({ col: "users", createObj: { ...req.body, role } })
-    } else {
+        const userId = user._id.toString()
+        // add support room on user creation
+        await create({ col: "support", createObj: { room: userId, userId, type: "support" } }) // create support room for new user
+    } else { // user exists
         user = foundUser[0]
     }
 

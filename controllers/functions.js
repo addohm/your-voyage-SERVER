@@ -12,6 +12,7 @@ const privacy = createModel("privacy")
 const messages = createModel("messages", { isRead: { type: Boolean, default: false } })
 const courses = createModel("courses")
 const faq = createModel("faq")
+const support = createModel("support")
 // ? models
 
 // ! CRUD

@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer"
+import dotenv from 'dotenv'
+dotenv.config()
 
 // !! mailer
 // * how to setup: 
@@ -37,6 +39,11 @@ export default function mailer(email, Subject, html) {
     // send mail with defined transport object 
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
+            console.log("SMTP_HOST: " + process.env.SMTP_HOST)
+            console.log("SMTP_PORT: " + process.env.SMTP_PORT)
+            console.log("ADMIN_EMAIL: " + process.env.ADMIN_EMAIL)
+            console.log("SMTP_APP_PASS: " + process.env.SMTP_APP_PASS)
+            console.log("SMTP_SECURE: " + process.env.SMTP_SECURE)
             return console.log("ERROR----" + error);
         }
         console.log('Message sent: ' + info.response);

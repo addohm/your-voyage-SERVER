@@ -16,10 +16,8 @@ export const loginGoogle = async (req, res) => {
         const role = setUserRole(email)
         user = await create({ col: "users", createObj: { ...req.body, role } })
         const userId = user._id.toString()
-        // add support room on user creation
-        await create({ col: "support", createObj: { room: userId, userId, type: "support" } })
-        // subscribe user to newsletter on user creation
-        await create({ col: "newsletter", createObj: { userId, email, type: "newsletter" } })
+        await addSupportRoomOnUserCreation({ role, userId })
+        await subscribeUserToNewsletterOnUserCreation({ userId, email })
         token = await signToken(userId)
     } else { // user exists
         user = users[0]
@@ -40,12 +38,11 @@ export const loginSendEmail = async (req, res) => {
     let user
     if (foundUser.length === 0) { // no user => create
         const role = setUserRole(email)
-        user = await create({ col: "users", createObj: { ...req.body, role } })
+        const name = email.split("@")[0] // users that logged WITHOUT google have no name
+        user = await create({ col: "users", createObj: { ...req.body, role, name } })
         const userId = user._id.toString()
-        // add support room on user creation
-        await create({ col: "support", createObj: { room: userId, userId, type: "support" } })
-        // subscribe user to newsletter on user creation
-        await create({ col: "newsletter", createObj: { userId, email, type: "newsletter" } })
+        await addSupportRoomOnUserCreation({ role, userId })
+        await subscribeUserToNewsletterOnUserCreation({ userId, email })
     } else { // user exists
         user = foundUser[0]
     }
@@ -66,6 +63,15 @@ export const loginSendEmail = async (req, res) => {
     `)
 
     res.json({ ok: true })
+}
+
+async function addSupportRoomOnUserCreation({ role, userId }) {
+    if (role !== "user") return
+    await create({ col: "support", createObj: { room: userId, userId, type: "support" } })
+}
+
+async function subscribeUserToNewsletterOnUserCreation({ userId, email }) {
+    await create({ col: "newsletter", createObj: { userId, email, type: "newsletter" } })
 }
 
 // ! autoAuth

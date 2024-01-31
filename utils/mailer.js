@@ -22,7 +22,7 @@ export default function mailer(email, Subject, html) {
         },
         secure: process.env.SMTP_SECURE || false,
         tls: {
-            ciphers: 'SSLv3',
+            // ciphers: 'SSLv3', // UNCOMMENT FOR GMAIL
             minVersion: 'TLSv1.2',
         },
         debug: true,

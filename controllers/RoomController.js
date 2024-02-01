@@ -34,7 +34,7 @@ export const getRooms = async (req, res) => { // room = coaching (DB model)
             }
 
             foundInfoWithRoomToken.forEach((info, infoInd) => {
-                info.name = foundCoachInfoToDisplayInEachUserRoom?.[infoInd]?.[0]?.coachName
+                info.coachName = foundCoachInfoToDisplayInEachUserRoom?.[infoInd]?.[0]?.coachName
                 info.img = foundCoachInfoToDisplayInEachUserRoom?.[infoInd]?.[0]?.img
             })
         }

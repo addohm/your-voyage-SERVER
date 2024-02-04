@@ -126,7 +126,6 @@ app.use(`/${uploadMsgContentPath}`, express.static(uploadMsgContentPath));
 import http from "http";
 import { Server } from "socket.io";
 import { create } from './controllers/functions.js'
-import { markAllMsgsAsRead } from "./utils/markAllMsgsAsRead.js"
 
 const server = http.createServer(app);
 

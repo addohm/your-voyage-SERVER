@@ -23,6 +23,7 @@ export const getRooms = async (req, res) => { // room = coaching (DB model)
         found = await find({ col: "coaching", query: { userId: req.user.id }, filter: { userId: 1, room: 1, courseName: 1, _id: 0 } }) // [{userId, room},{...}...]
     }
 
+    // ! MUTATE GETROOMS
     // ! mutateRoomInfo
     async function mutateRoomInfo(foundInfoWithRoomToken) {
         // ! rewrite for user: in each Room user sees: coach img, coach name
@@ -38,8 +39,14 @@ export const getRooms = async (req, res) => { // room = coaching (DB model)
                 info.img = foundCoachInfoToDisplayInEachUserRoom?.[infoInd]?.[0]?.img
             })
         }
+        // add type: needed for Snackbar Link: => /type<message||support>/msgId
+        // fot all: user, admin, support
+        foundInfoWithRoomToken.forEach((info, infoInd) => {
+            info.type = "message"
+        })
         return foundInfoWithRoomToken
     }
+    // ? MUTATE GETROOMS
 
     res.json(await processRooms({ req, found, mutateRoomInfo }))
 }
@@ -56,7 +63,19 @@ export const getRoomsSupport = async (req, res) => {
         found = await find({ col: "support", query: { userId: req.user.id }, filter: { userId: 1, room: 1, _id: 0 } }) // [{userId, room},{...}...]
     }
 
-    res.json(await processRooms({ req, found }))
+    // ! MUTATE GETROOMSSUPPORT
+    // ! mutateRoomInfo
+    async function mutateRoomInfo(foundInfoWithRoomToken) {
+        // add type: needed for Snackbar Link: => /type<message||support>/msgId
+        foundInfoWithRoomToken.forEach((info, infoInd) => {
+            info.type = "support"
+            info.courseName = "support"
+        })
+        return foundInfoWithRoomToken
+    }
+    // ? MUTATE GETROOMSSUPPORT
+
+    res.json(await processRooms({ req, found, mutateRoomInfo }))
 }
 
 // ! processRooms
@@ -78,7 +97,7 @@ async function processRooms({ req, found, mutateRoomInfo }) {
     let foundInfoWithRoomToken = foundInfo.map((info, infoInd) => ({
         name: info?.[0]?.name,
         img: info?.[0]?.img,
-        userId: info?.[0]?._id,
+        userId: lastMsgsArr?.[infoInd]?.userId,
         room: found?.[infoInd]?.room,
         msg: lastMsgsArr?.[infoInd]?.msg,
         msgImg: lastMsgsArr?.[infoInd]?.img,

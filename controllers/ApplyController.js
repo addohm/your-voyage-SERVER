@@ -33,7 +33,7 @@ export const checkSubscriptionForCoaching = async (req, res) => {
 
     if (type === "one") {
         // one checks if user has active subscription for one EXACT coaching (using room prop)
-        const foundCoaching = await find({ col: "coaching", query: { room, userId: req.user.id } })
+        const foundCoaching = await find({ col: "coaching", query: { room } })
 
         const coaching = foundCoaching?.[0]
         if (!coaching) return

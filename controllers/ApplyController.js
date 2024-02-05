@@ -1,4 +1,4 @@
-import { _delete, create, find, signToken, verifyToken } from "./functions.js"
+import { _delete, create, find, signToken, update, verifyToken } from "./functions.js"
 
 // ! applyForCoaching
 export const applyForCoaching = async (req, res) => {
@@ -9,10 +9,11 @@ export const applyForCoaching = async (req, res) => {
     const foundToken = await find({ col: "coaching", query: { token } })
     if (foundToken.length > 0) return // prevent writing order with same token
 
-    const room = await signToken(userId + courseId) // make roomToken for messages
+    update({ col: "users", filter: { _id: userId }, update: { hasPurchase: true } }) // user has purchase
+    const room = await signToken(userId + courseId) // make unique roomToken for messages
     await _delete({ query: { userId, courseId }, col: req.body.type }) // if user renews subscription => delete old subscription
-    const created = await create({ createObj: { ...req.body, room }, col: req.body.type })
-    created && res.json({ msg: "You have 30 days left. Thank you!" })
+    const createdCoaching = await create({ createObj: { ...req.body, room }, col: req.body.type })
+    createdCoaching && res.json({ msg: "You have 30 days left. Thank you!" })
 }
 
 // ! checkSubscriptionForCoaching

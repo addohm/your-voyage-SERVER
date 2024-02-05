@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 // ! models
 import createModel from "../models/createModel.js"
 // * gray cause of eval
-const users = createModel("users", { role: { type: String, default: "" } })
+const users = createModel("users", { role: { type: String, default: "" }, hasPurchase: { type: Boolean, default: false } })
 const tools = createModel("tools")
 const books = createModel("books")
 const news = createModel("news")

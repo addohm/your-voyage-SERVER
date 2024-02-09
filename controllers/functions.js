@@ -58,6 +58,14 @@ export const find = async ({ col, query, filter, sort, limit, skip }) => {
     return find // [{},{}...]
 }
 
+// ! findOne
+export const findOne = async ({ col, query }) => {
+    // await findOne({ col: "courses", query: { coachEmail: user?.email } })
+    const findOne = await eval(col).findOne({ ...query })
+    return findOne // {}
+}
+
+// ! createMany
 export const createMany = async ({ reqBody }) => {
     const foundPosts = await find({ col: reqBody.type, query: { _id: reqBody._id } })
     if (!foundPosts?.[0]) { // no post found => CREATE POST

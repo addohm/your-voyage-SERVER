@@ -1,7 +1,7 @@
 import mailer from "../utils/mailer.js"
 import mailerButton from "../utils/mailerButton.js"
 import setUserRole from "../utils/setUserRole.js"
-import { create, find, signToken, verifyToken } from "./functions.js"
+import { create, find, findOne, signToken, verifyToken } from "./functions.js"
 
 // ! loginGoogle
 export const loginGoogle = async (req, res) => {
@@ -82,6 +82,10 @@ export const autoAuth = async (req, res) => {
     const userId = await verifyToken(token)
     let user = await find({ col: "users", query: { _id: userId } })
     user = user?.[0]
+    // redefine user role if admin has assigned new coach
+    const foundUpdatedByAdminAnyMomentCoachRole = await findOne({ col: "courses", query: { coachEmail: user?.email } })
+    const role = foundUpdatedByAdminAnyMomentCoachRole && user?.role !== "admin" ? "coach" : user?.role
+    user.role = role
 
     res.json({ ok: true, user })
 }

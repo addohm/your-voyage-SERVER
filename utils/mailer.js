@@ -45,7 +45,7 @@ export default function mailer(email, Subject, html) {
             console.log("SMTP_SECURE: " + process.env.SMTP_SECURE)
             return console.log("ERROR----" + error);
         }
-        console.log('Message sent: ' + info.response);
+        console.log(`Message sent: to email: ${email}` + info.response);
     });
 }
 // ?? mailer

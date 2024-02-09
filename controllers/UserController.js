@@ -78,6 +78,7 @@ async function subscribeUserToNewsletterOnUserCreation({ userId, email }) {
 export const autoAuth = async (req, res) => {
 
     const { token } = req.body
+    if (!token) return
 
     const userId = await verifyToken(token)
     let user = await find({ col: "users", query: { _id: userId } })

@@ -7,8 +7,8 @@ export const getRooms = async (req, res) => { // room = coaching (DB model)
 
     // ! found
     let found
-    if (req.user.role === "admin" || req.user.role === "coach") {
-        // admin or coach
+    if (req.user.role === "admin" || req.user.role === "coach" || req.user.role === "support") {
+        // admin or coach +support sees coach rooms even if he is support initially (admin can assign coach role to support)
         const foundCourseIdsForThisCoach = await find({ col: "courses", query: { coachEmail: email }, filter: { courseId: 1 } })
         const foundCourseIds = foundCourseIdsForThisCoach?.map(course => String(course._id))
         const roomsForThisCoach = []

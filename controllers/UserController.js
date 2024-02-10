@@ -83,6 +83,7 @@ export const autoAuth = async (req, res) => {
     const userId = await verifyToken(token)
     let user = await find({ col: "users", query: { _id: userId } })
     user = user?.[0]
+    if (!user) return
     // redefine user role if admin has assigned new coach
     const foundUpdatedByAdminAnyMomentCoachRole = await findOne({ col: "courses", query: { coachEmail: user?.email } })
     const role = foundUpdatedByAdminAnyMomentCoachRole && user?.role !== "admin" ? "coach" : user?.role

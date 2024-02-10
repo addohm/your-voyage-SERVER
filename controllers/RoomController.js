@@ -89,10 +89,10 @@ async function processRooms({ req, found, mutateRoomInfo }) {
         foundInfo.push(await find({ col: "users", query: { _id: foundUserIds[i] }, filter: { name: 1, img: 1, _id: 1 } }))
     }
 
-    let allMessages = await find({ col: "messages", query: { room: { $in: foundRoomTokens } }, filter: { msg: 1, room: 1, updatedAt: 1, userId: 1, isRead: 1, img: 1, name: 1, _id: 0 } })
+    let allMessages = await find({ col: "messages", query: { room: { $in: foundRoomTokens } }, filter: { msg: 1, room: 1, updatedAt: 1, userId: 1, isRead: 1, isDeleted: 1, img: 1, name: 1, _id: 0 } })
     const allMessagesReversed = [...allMessages].reverse()
-    const lastMsgsArr = foundRoomTokens.map(token => allMessagesReversed.find(message => token === message.room && { msg: message.msg, room: message.room, createdAt: message.updatedAt, img: message.img }))
-    const notReadMsgsArr = foundRoomTokens.map(token => allMessages.map(message => req.user.id !== message.userId && message.isRead === false && token === message.room).filter(leaveOnlyTrue => leaveOnlyTrue))
+    const lastMsgsArr = foundRoomTokens.map(token => allMessagesReversed.find(message => token === message.room && !message.isDeleted && { msg: message.msg, room: message.room, createdAt: message.updatedAt, img: message.img }))
+    const notReadMsgsArr = foundRoomTokens.map(token => allMessages.map(message => req.user.id !== message.userId && message.isRead === false && !message.isDeleted && token === message.room).filter(leaveOnlyTrue => leaveOnlyTrue))
 
     let foundInfoWithRoomToken = foundInfo.map((info, infoInd) => ({
         name: info?.[0]?.name,

@@ -101,7 +101,7 @@ async function processRooms({ req, found, mutateRoomInfo }) {
         userId: lastMsgsArr?.[infoInd]?.userId,
         room: found?.[infoInd]?.room,
         msg: lastMsgsArr?.[infoInd]?.msg,
-        msgImg: lastMsgsArr?.[infoInd]?.img,
+        senderImg: lastMsgsArr?.[infoInd]?.img,
         createdAt: lastMsgsArr?.[infoInd]?.updatedAt,
         notReadNum: notReadMsgsArr?.[infoInd]?.length,
         isRead: lastMsgsArr?.[infoInd]?.isRead,

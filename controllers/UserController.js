@@ -52,16 +52,22 @@ export const loginSendEmail = async (req, res) => {
     const userId = user._id.toString()
     const token = await signToken(userId)
 
-    mailer(email, `To Login to ${process.env.CLIENT_URL.replace("https://www.", "")}, please Confirm Your Email`, `
-    <head>
-    	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-    </head>
-    <div style="width: fit-content;">
-    	<h1 style="width: 100%">Please confirm your email</h1>
-    	<img width="300px" src="cid:confirmEmail.png" />
-    	${mailerButton({ href: process.env.CLIENT_URL + "/verifyLoginToken/" + token, text: "CONFIRM EMAIL" })}
-    </div>
-    `)
+    mailer({
+        email,
+        attachments: [{ filename: 'image1.png', path: './utils/img/logo2.png', contentType: 'image/png', cid: "logo2" }],
+        subject: `To Login to ${process.env.CLIENT_URL.replace("https://www.", "")}, please Confirm Your Email`,
+        html: `
+            <head>
+            	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+            </head>
+            <img src='cid:logo2' />
+            <div style="width: fit-content;">
+            	<h2 style="width: 100%">Please confirm your email</h2>
+                <div style="width: 100%">
+            	${mailerButton({ href: process.env.CLIENT_URL + "/verifyLoginToken/" + token, text: "CONFIRM EMAIL" })}
+                </div>
+            </div>
+        `})
 
     res.json({ ok: true })
 }

@@ -11,7 +11,7 @@ dotenv.config()
 // Nodemailer for office 365 example
 // https://github.com/nodemailer/nodemailer/issues/1482
 // https://nodemailer.com/smtp/
-export default function mailer(email, Subject, html) {
+export default function mailer({ email, subject, html, attachments }) {
     // create reusable transporter object using the default SMTP transport 
     var transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
@@ -31,8 +31,9 @@ export default function mailer(email, Subject, html) {
     var mailOptions = {
         from: process.env.ADMIN_EMAIL, // sender address 
         to: email, // list of receivers 
-        subject: Subject, // Subject line 
+        subject, // Subject line 
         html: html, // html body 
+        attachments
     };
 
     // send mail with defined transport object 
@@ -45,7 +46,7 @@ export default function mailer(email, Subject, html) {
             console.log("SMTP_SECURE: " + process.env.SMTP_SECURE)
             return console.log("ERROR----" + error);
         }
-        console.log(`Message sent: to email: ${email}` + info.response);
+        console.log(`Message sent to email: ${email} ` + info.response);
     });
 }
 // ?? mailer

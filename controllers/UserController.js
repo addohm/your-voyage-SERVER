@@ -1,5 +1,6 @@
 import mailer from "../utils/mailer.js"
 import mailerButton from "../utils/mailerButton.js"
+import redefineUserRole from "../utils/redefineUserRole.js"
 import setUserRole from "../utils/setUserRole.js"
 import { create, find, findOne, signToken, verifyToken } from "./functions.js"
 
@@ -85,11 +86,11 @@ export const autoAuth = async (req, res) => {
     user = user?.[0]
 
     if (!user) return res.json({})
-    
-    // redefine user role if admin has assigned new coach
-    const foundUpdatedByAdminAnyMomentCoachRole = await findOne({ col: "courses", query: { coachEmail: user?.email } })
-    const role = foundUpdatedByAdminAnyMomentCoachRole && user?.role !== "admin" ? "coach" : user?.role
-    user.role = role
+
+    const userEmail = user?.email
+    const userRole = user?.role
+    const redefinedUserRole = await redefineUserRole({ userEmail, userRole }) // redefine for FRONT-END
+    user.role = redefinedUserRole
 
     res.json({ ok: true, user })
 }

@@ -55,7 +55,7 @@ export const loginSendEmail = async (req, res) => {
     mailer({
         email,
         attachments: [{ filename: 'image1.png', path: './utils/img/logo2.png', contentType: 'image/png', cid: "logo2" }],
-        subject: `To Login to ${process.env.CLIENT_URL.replace("https://www.", "")}, please Confirm Your Email`,
+        subject: `To login to ${process.env.CLIENT_URL.replace("https://www.", "")}, confirm your email`,
         html: `
             <head>
             	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
